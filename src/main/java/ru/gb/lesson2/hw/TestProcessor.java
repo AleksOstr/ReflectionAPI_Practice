@@ -30,13 +30,20 @@ public class TestProcessor {
 
     List<Method> methods = new ArrayList<>();
     for (Method method : testClass.getDeclaredMethods()) {
-      if (method.isAnnotationPresent(Test.class)) {
+      // Выбираем методы с аннотацией @Test, при этом пропуская методы с аннотацией @Skip
+      if (method.isAnnotationPresent(Test.class) && !method.isAnnotationPresent(Skip.class)) {
         checkTestMethod(method);
         methods.add(method);
       }
     }
 
-    methods.forEach(it -> runTest(it, testObj));
+    // Запускаем тесты с аннотацией @BeforeEach
+    methods.stream().filter(m -> m.isAnnotationPresent(BeforeEach.class)).forEach(m -> runTest(m, testObj));
+
+    methods.stream().filter(m -> !m.isAnnotationPresent(AfterEach.class)
+            && !m.isAnnotationPresent(BeforeEach.class)).forEach(m -> runTest(m, testObj));
+    // Запускаем тесты с аннотацией @AfterEach
+    methods.stream().filter(m -> m.isAnnotationPresent(AfterEach.class)).forEach(m -> runTest(m, testObj));
   }
 
   private static void checkTestMethod(Method method) {
