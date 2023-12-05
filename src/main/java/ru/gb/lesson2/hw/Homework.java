@@ -21,7 +21,7 @@ public class Homework {
 
     static class MyTest {
 
-        @Test
+        @Test (order = -5)
         void firstTest() {
             System.out.println("firstTest запущен");
         }
@@ -31,13 +31,18 @@ public class Homework {
             System.out.println("secondTest запущен");
         }
 
+        @Test(order = 5)
+        void thirdTest() {
+            System.out.println("thirdTest запущен");
+        }
+
         @Test
         @Skip
         void mustBeSkipped() {
             System.out.println("Этот метод должен быть пропущен");
         }
 
-        @Test
+        @Test(order = -1)
         @AfterEach
         void firstAfterEachTest() {
             System.out.println("firstAfterEachTest запущен");
@@ -49,7 +54,7 @@ public class Homework {
             System.out.println("secondAfterEachTest запущен");
         }
 
-        @Test
+        @Test(order = -1)
         @BeforeEach
         void firstBeforeEachTest() {
             System.out.println("firstBeforeEachTest запущен");

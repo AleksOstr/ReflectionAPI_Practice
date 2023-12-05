@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class TestProcessor {
@@ -38,12 +39,18 @@ public class TestProcessor {
     }
 
     // Запускаем тесты с аннотацией @BeforeEach
-    methods.stream().filter(m -> m.isAnnotationPresent(BeforeEach.class)).forEach(m -> runTest(m, testObj));
+    methods.stream().filter(m -> m.isAnnotationPresent(BeforeEach.class)).
+            sorted(Comparator.comparingInt(m -> m.getAnnotation(Test.class).order())).
+            forEach(m -> runTest(m, testObj));
 
-    methods.stream().filter(m -> !m.isAnnotationPresent(AfterEach.class)
-            && !m.isAnnotationPresent(BeforeEach.class)).forEach(m -> runTest(m, testObj));
+    // Запускаем тесты в соответствии с @Test(order)
+    methods.stream().filter(m -> !m.isAnnotationPresent(AfterEach.class) && !m.isAnnotationPresent(BeforeEach.class)).
+            sorted(Comparator.comparingInt(m -> m.getAnnotation(Test.class).order())).
+            forEach(m -> runTest(m, testObj));
     // Запускаем тесты с аннотацией @AfterEach
-    methods.stream().filter(m -> m.isAnnotationPresent(AfterEach.class)).forEach(m -> runTest(m, testObj));
+    methods.stream().filter(m -> m.isAnnotationPresent(AfterEach.class)).
+            sorted(Comparator.comparingInt(m -> m.getAnnotation(Test.class).order())).
+            forEach(m -> runTest(m, testObj));
   }
 
   private static void checkTestMethod(Method method) {
